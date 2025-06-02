@@ -1,0 +1,458 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Crop Yield Prediction</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        font-family: 'Poppins', sans-serif;
+        min-height: 100vh;
+        padding: 20px 0;
+      }
+
+      .main-container {
+        max-width: 500px;
+        margin: 0 auto;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 25px;
+        padding: 40px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(10px);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .main-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57);
+        background-size: 300% 300%;
+        animation: gradientShift 3s ease infinite;
+      }
+
+      @keyframes gradientShift {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+      }
+
+      .header-section {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .main-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 8px;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .subtitle {
+        font-size: 16px;
+        color: #e74c3c;
+        font-weight: 500;
+        margin-bottom: 20px;
+      }
+
+      .form-section {
+        margin-bottom: 30px;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+        position: relative;
+      }
+
+      .form-group label {
+        font-weight: 600;
+        color: #34495e;
+        margin-bottom: 8px;
+        display: block;
+        font-size: 14px;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 15px 20px;
+        border: 2px solid #e9ecef;
+        border-radius: 15px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        background: #f8f9fa;
+        color: #2c3e50;
+      }
+
+      .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        background: white;
+        outline: none;
+      }
+
+      .predict-btn {
+        width: 100%;
+        padding: 18px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 15px;
+        font-size: 18px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .predict-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+      }
+
+      .predict-btn:active {
+        transform: translateY(0);
+      }
+
+      .predict-btn::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+      }
+
+      .predict-btn:active::before {
+        width: 300px;
+        height: 300px;
+      }
+
+      .prediction-result {
+        background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 20px;
+        text-align: center;
+        margin-top: 30px;
+        box-shadow: 0 15px 35px rgba(78, 205, 196, 0.3);
+        position: relative;
+        overflow: hidden;
+        animation: slideInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .prediction-result::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        transform: rotate(45deg);
+        animation: shimmer 2s infinite;
+      }
+
+      @keyframes shimmer {
+        0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+        100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+      }
+
+      @keyframes slideInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .prediction-icon {
+        font-size: 48px;
+        margin-bottom: 15px;
+        animation: bounce 2s infinite;
+      }
+
+      @keyframes bounce {
+        0%, 20%, 50%, 80%, 100% {
+          transform: translateY(0);
+        }
+        40% {
+          transform: translateY(-10px);
+        }
+        60% {
+          transform: translateY(-5px);
+        }
+      }
+
+      .prediction-title {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 10px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .prediction-value {
+        font-size: 32px;
+        font-weight: 700;
+        margin: 15px 0;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        position: relative;
+        z-index: 1;
+      }
+
+      .prediction-unit {
+        font-size: 16px;
+        opacity: 0.9;
+        position: relative;
+        z-index: 1;
+      }
+
+      .loading-spinner {
+        display: none;
+        text-align: center;
+        margin-top: 20px;
+      }
+
+      .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto;
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      .floating-particles {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        pointer-events: none;
+        z-index: -1;
+      }
+
+      .particle {
+        position: absolute;
+        background: rgba(102, 126, 234, 0.1);
+        border-radius: 50%;
+        animation: float 6s ease-in-out infinite;
+      }
+
+      .particle:nth-child(1) {
+        width: 20px;
+        height: 20px;
+        left: 10%;
+        animation-delay: 0s;
+      }
+
+      .particle:nth-child(2) {
+        width: 15px;
+        height: 15px;
+        left: 70%;
+        animation-delay: 2s;
+      }
+
+      .particle:nth-child(3) {
+        width: 25px;
+        height: 25px;
+        left: 40%;
+        animation-delay: 4s;
+      }
+
+      @keyframes float {
+        0%, 100% {
+          transform: translateY(100vh) rotate(0deg);
+          opacity: 0;
+        }
+        10%, 90% {
+          opacity: 1;
+        }
+        50% {
+          transform: translateY(-10px) rotate(180deg);
+        }
+      }
+
+      @media (max-width: 768px) {
+        .main-container {
+          margin: 10px;
+          padding: 30px 20px;
+        }
+
+        .main-title {
+          font-size: 20px;
+        }
+
+        .prediction-value {
+          font-size: 28px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="floating-particles">
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+    </div>
+
+    <div class="main-container">
+      <div class="header-section">
+        <h1 class="main-title">
+          <i class="fas fa-seedling"></i>
+          Crop Yield Prediction Per Country
+        </h1>
+        <p class="subtitle">Input All Features Here</p>
+      </div>
+
+      <div class="form-section">
+        <form action="/predict" method="post" id="predictionForm">
+          <div class="form-group">
+            <label for="Year">
+              <i class="fas fa-calendar-alt"></i> Year
+            </label>
+            <input type="number" class="form-control" name="Year" step="any" value="2013" required>
+          </div>
+
+          <div class="form-group">
+            <label for="average_rain_fall_mm_per_year">
+              <i class="fas fa-cloud-rain"></i> Average Rainfall (mm per year)
+            </label>
+            <input type="number" class="form-control" name="average_rain_fall_mm_per_year" step="any" required>
+          </div>
+
+          <div class="form-group">
+            <label for="pesticides_tonnes">
+              <i class="fas fa-spray-can"></i> Pesticides (Tonnes)
+            </label>
+            <input type="number" class="form-control" name="pesticides_tonnes" step="any" required>
+          </div>
+
+          <div class="form-group">
+            <label for="avg_temp">
+              <i class="fas fa-thermometer-half"></i> Average Temperature (°C)
+            </label>
+            <input type="number" class="form-control" name="avg_temp" step="any" required>
+          </div>
+
+          <div class="form-group">
+            <label for="Area">
+              <i class="fas fa-map"></i> Area (Hectares)
+            </label>
+            <input type="text" class="form-control" name="Area" required>
+          </div>
+
+          <div class="form-group">
+            <label for="Item">
+              <i class="fas fa-leaf"></i> Crop Item
+            </label>
+            <input type="text" class="form-control" name="Item" required>
+          </div>
+
+          <button type="submit" class="predict-btn" id="predictBtn">
+            <i class="fas fa-chart-line"></i>
+            Predict
+          </button>
+        </form>
+
+        <div class="loading-spinner" id="loadingSpinner">
+          <div class="spinner"></div>
+          <p style="margin-top: 15px; color: #667eea; font-weight: 600;">Analyzing data...</p>
+        </div>
+      </div>
+
+      {% if prediction %}
+      <div class="prediction-result">
+        <div class="prediction-icon">
+          <i class="fas fa-chart-bar"></i>
+        </div>
+        <div class="prediction-title">Predicted Yield:</div>
+        <div class="prediction-value">{{prediction}}</div>
+        <div class="prediction-unit">kg/hectare</div>
+      </div>
+      {% endif %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('predictionForm');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const predictBtn = document.getElementById('predictBtn');
+
+        form.addEventListener('submit', function() {
+          loadingSpinner.style.display = 'block';
+          predictBtn.disabled = true;
+          predictBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        });
+
+        // Add floating animation to form controls
+        const formControls = document.querySelectorAll('.form-control');
+        formControls.forEach(control => {
+          control.addEventListener('focus', function() {
+            this.parentElement.style.transform = 'translateY(-2px)';
+          });
+
+          control.addEventListener('blur', function() {
+            this.parentElement.style.transform = 'translateY(0)';
+          });
+        });
+
+        // Add ripple effect to button
+        const button = document.querySelector('.predict-btn');
+        button.addEventListener('click', function(e) {
+          const ripple = document.createElement('span');
+          const rect = this.getBoundingClientRect();
+          const size = Math.max(rect.width, rect.height);
+          const x = e.clientX - rect.left - size / 2;
+          const y = e.clientY - rect.top - size / 2;
+
+          ripple.style.width = ripple.style.height = size + 'px';
+          ripple.style.left = x + 'px';
+          ripple.style.top = y + 'px';
+          ripple.classList.add('ripple');
+
+          this.appendChild(ripple);
+
+          setTimeout(() => {
+            ripple.remove();
+          }, 600);
+        });
+      });
+    </script>
+  </body>
+</html>
