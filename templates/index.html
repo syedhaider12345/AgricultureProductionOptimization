@@ -8,6 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
       * {
         margin: 0;
@@ -32,9 +33,22 @@
         backdrop-filter: blur(10px);
         position: relative;
         overflow: hidden;
+        margin-bottom: 30px;
       }
 
-      .main-container::before {
+      .dashboard-container {
+        max-width: 1200px;
+        margin: 0 auto 30px auto;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 25px;
+        padding: 40px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(10px);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .main-container::before, .dashboard-container::before {
         content: '';
         position: absolute;
         top: 0;
@@ -64,11 +78,112 @@
         text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
 
+      .dashboard-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 8px;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
       .subtitle {
         font-size: 16px;
         color: #e74c3c;
         font-weight: 500;
         margin-bottom: 20px;
+      }
+
+      .chart-tabs {
+        margin-bottom: 30px;
+      }
+
+      .tab-button {
+        background: #f8f9fa;
+        border: 2px solid #e9ecef;
+        color: #6c757d;
+        padding: 12px 24px;
+        margin-right: 10px;
+        border-radius: 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+      }
+
+      .tab-button.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-color: #667eea;
+        color: white;
+      }
+
+      .tab-content {
+        display: none;
+        animation: fadeIn 0.5s ease;
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      .chart-container {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
+
+      .chart-header {
+        font-size: 18px;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+
+      .stat-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        transition: transform 0.3s ease;
+      }
+
+      .stat-card:hover {
+        transform: translateY(-5px);
+      }
+
+      .stat-icon {
+        font-size: 36px;
+        margin-bottom: 15px;
+        color: #667eea;
+      }
+
+      .stat-value {
+        font-size: 24px;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 5px;
+      }
+
+      .stat-label {
+        color: #6c757d;
+        font-size: 14px;
+        font-weight: 500;
       }
 
       .form-section {
@@ -307,17 +422,25 @@
       }
 
       @media (max-width: 768px) {
-        .main-container {
+        .main-container, .dashboard-container {
           margin: 10px;
           padding: 30px 20px;
         }
 
-        .main-title {
+        .main-title, .dashboard-title {
           font-size: 20px;
         }
 
         .prediction-value {
           font-size: 28px;
+        }
+
+        .stats-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .tab-button {
+          margin-bottom: 10px;
         }
       }
     </style>
@@ -329,6 +452,7 @@
       <div class="particle"></div>
     </div>
 
+    <!-- Prediction Form Section -->
     <div class="main-container">
       <div class="header-section">
         <h1 class="main-title">
@@ -406,10 +530,541 @@
       {% endif %}
     </div>
 
+    <!-- Charts and Analytics Section -->
+    <div class="dashboard-container">
+      <div class="header-section">
+        <h1 class="dashboard-title">
+          <i class="fas fa-chart-line"></i>
+          Agricultural Feature Analysis
+        </h1>
+        <p class="subtitle">Individual Feature Impact on Crop Yield</p>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fas fa-cloud-rain"></i>
+          </div>
+          <div class="stat-value">1,245 mm</div>
+          <div class="stat-label">Average Annual Rainfall</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fas fa-thermometer-half"></i>
+          </div>
+          <div class="stat-value">23.5°C</div>
+          <div class="stat-label">Optimal Temperature</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <div class="stat-value">3,750 kg/ha</div>
+          <div class="stat-label">Average Crop Yield</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fas fa-map"></i>
+          </div>
+          <div class="stat-value">8,500 ha</div>
+          <div class="stat-label">Average Cultivation Area</div>
+        </div>
+      </div>
+
+      <!-- Chart Tabs -->
+      <div class="chart-tabs">
+        <button class="tab-button active" data-tab="rainfall">Rainfall Analysis</button>
+        <button class="tab-button" data-tab="temperature">Temperature Impact</button>
+        <button class="tab-button" data-tab="area">Area Efficiency</button>
+        <button class="tab-button" data-tab="pesticides">Pesticide Usage</button>
+        <button class="tab-button" data-tab="crops">Crop Comparison</button>
+      </div>
+
+      <!-- Rainfall Analysis -->
+      <div class="tab-content active" id="rainfall-tab">
+        <div class="chart-container" style="height: 350px;">
+          <div class="chart-header">
+            <i class="fas fa-cloud-rain"></i>
+            Annual Rainfall Impact on Crop Yield
+          </div>
+          <canvas id="rainfallChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Temperature Analysis -->
+      <div class="tab-content" id="temperature-tab">
+        <div class="chart-container" style="height: 350px;">
+          <div class="chart-header">
+            <i class="fas fa-thermometer-half"></i>
+            Temperature Variation and Yield Correlation
+          </div>
+          <canvas id="temperatureChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Area Analysis -->
+      <div class="tab-content" id="area-tab">
+        <div class="chart-container" style="height: 350px;">
+          <div class="chart-header">
+            <i class="fas fa-map"></i>
+            Cultivated Area vs Yield Efficiency
+          </div>
+          <canvas id="areaChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Pesticides Analysis -->
+      <div class="tab-content" id="pesticides-tab">
+        <div class="chart-container" style="height: 350px;">
+          <div class="chart-header">
+            <i class="fas fa-spray-can"></i>
+            Pesticide Usage Impact on Productivity
+          </div>
+          <canvas id="pesticidesChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Crop Comparison -->
+      <div class="tab-content" id="crops-tab">
+        <div class="chart-container" style="height: 350px;">
+          <div class="chart-header">
+            <i class="fas fa-balance-scale"></i>
+            Crop Item Yield Comparison
+          </div>
+          <canvas id="cropComparisonChart"></canvas>
+        </div>
+      </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
 
     <script>
+      // Chart initialization functions
+      function initRainfallChart() {
+        const ctx = document.getElementById('rainfallChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: ['2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023'],
+            datasets: [{
+              label: 'Rainfall (mm)',
+              data: [1200, 1350, 980, 1450, 1180, 1320, 1520, 1100, 1380],
+              borderColor: '#4ecdc4',
+              backgroundColor: 'rgba(78, 205, 196, 0.1)',
+              borderWidth: 3,
+              fill: true,
+              tension: 0.4
+            }, {
+              label: 'Crop Yield (kg/ha)',
+              data: [3200, 3750, 2900, 4100, 3150, 3600, 4350, 3000, 3850],
+              borderColor: '#667eea',
+              backgroundColor: 'rgba(102, 126, 234, 0.1)',
+              borderWidth: 3,
+              fill: false,
+              tension: 0.4,
+              yAxisID: 'y1'
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                position: 'top',
+              },
+              tooltip: {
+                mode: 'index',
+                intersect: false,
+                backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                titleColor: '#2c3e50',
+                bodyColor: '#2c3e50',
+                borderColor: '#e9ecef',
+                borderWidth: 1,
+                padding: 12,
+                boxPadding: 6,
+                usePointStyle: true,
+                callbacks: {
+                  label: function(context) {
+                    let label = context.dataset.label || '';
+                    if (label) {
+                      label += ': ';
+                    }
+                    if (context.parsed.y !== null) {
+                      if (context.datasetIndex === 0) {
+                        label += context.parsed.y + ' mm';
+                      } else {
+                        label += context.parsed.y + ' kg/ha';
+                      }
+                    }
+                    return label;
+                  }
+                }
+              }
+            },
+            interaction: {
+              mode: 'nearest',
+              axis: 'x',
+              intersect: false
+            },
+            scales: {
+              y: {
+                type: 'linear',
+                display: true,
+                position: 'left',
+                title: {
+                  display: true,
+                  text: 'Rainfall (mm)'
+                }
+              },
+              y1: {
+                type: 'linear',
+                display: true,
+                position: 'right',
+                title: {
+                  display: true,
+                  text: 'Yield (kg/ha)'
+                },
+                grid: {
+                  drawOnChartArea: false,
+                }
+              }
+            }
+          }
+        });
+      }
+
+      function initTemperatureChart() {
+        const ctx = document.getElementById('temperatureChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'scatter',
+          data: {
+            datasets: [{
+              label: 'Maize',
+              data: [
+                {x: 18, y: 2800}, {x: 20, y: 3200}, {x: 22, y: 3600}, {x: 24, y: 3900},
+                {x: 26, y: 4100}, {x: 28, y: 3800}, {x: 30, y: 3400}
+              ],
+              backgroundColor: '#ff6b6b',
+              borderColor: '#ff6b6b',
+              pointRadius: 8,
+              pointHoverRadius: 12
+            }, {
+              label: 'Wheat',
+              data: [
+                {x: 16, y: 2200}, {x: 18, y: 2600}, {x: 20, y: 2900}, {x: 22, y: 3100},
+                {x: 24, y: 2800}, {x: 26, y: 2400}
+              ],
+              backgroundColor: '#4ecdc4',
+              borderColor: '#4ecdc4',
+              pointRadius: 8,
+              pointHoverRadius: 12
+            }, {
+              label: 'Rice',
+              data: [
+                {x: 20, y: 3000}, {x: 22, y: 3400}, {x: 24, y: 3800}, {x: 26, y: 4200},
+                {x: 28, y: 4400}, {x: 30, y: 4100}
+              ],
+              backgroundColor: '#45b7d1',
+              borderColor: '#45b7d1',
+              pointRadius: 8,
+              pointHoverRadius: 12
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                position: 'top',
+              },
+              tooltip: {
+                backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                titleColor: '#2c3e50',
+                bodyColor: '#2c3e50',
+                borderColor: '#e9ecef',
+                borderWidth: 1,
+                padding: 12,
+                callbacks: {
+                  label: function(context) {
+                    return context.raw.x + '°C, Yield: ' + context.raw.y + ' kg/ha';
+                  }
+                }
+              }
+            },
+            scales: {
+              x: {
+                title: {
+                  display: true,
+                  text: 'Average Temperature (°C)'
+                }
+              },
+              y: {
+                title: {
+                  display: true,
+                  text: 'Crop Yield (kg/ha)'
+                }
+              }
+            }
+          }
+        });
+      }
+
+      function initAreaChart() {
+        const ctx = document.getElementById('areaChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: ['0-1000 Ha', '1000-5000 Ha', '5000-10000 Ha', '10000-25000 Ha', '25000+ Ha'],
+            datasets: [{
+              label: 'Average Yield (kg/ha)',
+              data: [3200, 3650, 3890, 4120, 4350],
+              backgroundColor: [
+                'rgba(255, 107, 107, 0.8)',
+                'rgba(78, 205, 196, 0.8)',
+                'rgba(69, 183, 209, 0.8)',
+                'rgba(150, 206, 180, 0.8)',
+                'rgba(254, 202, 87, 0.8)'
+              ],
+              borderColor: [
+                '#ff6b6b',
+                '#4ecdc4',
+                '#45b7d1',
+                '#96ceb4',
+                '#feca57'
+              ],
+              borderWidth: 2,
+              borderRadius: 6,
+              hoverBorderWidth: 3
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                position: 'top',
+              },
+              tooltip: {
+                backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                titleColor: '#2c3e50',
+                bodyColor: '#2c3e50',
+                borderColor: '#e9ecef',
+                borderWidth: 1,
+                padding: 12,
+                callbacks: {
+                  afterLabel: function(context) {
+                    const efficiencies = [
+                      'High labor efficiency',
+                      'Good machinery utilization',
+                      'Optimal resource allocation',
+                      'Excellent scale advantage',
+                      'Maximum economic output'
+                    ];
+                    return 'Efficiency: ' + efficiencies[context.dataIndex];
+                  }
+                }
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: 'Average Yield (kg/ha)'
+                }
+              },
+              x: {
+                title: {
+                  display: true,
+                  text: 'Area Range'
+                }
+              }
+            }
+          }
+        });
+      }
+
+      function initPesticidesChart() {
+        const ctx = document.getElementById('pesticidesChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: ['0-10', '10-50', '50-100', '100-200', '200-500', '500+'],
+            datasets: [{
+              label: 'Yield with Pesticides (kg/ha)',
+              data: [2800, 3400, 3900, 4200, 4100, 3800],
+              borderColor: '#e74c3c',
+              backgroundColor: 'rgba(231, 76, 60, 0.1)',
+              borderWidth: 3,
+              fill: true,
+              tension: 0.4,
+              pointHoverRadius: 10,
+              pointHoverBackgroundColor: '#e74c3c'
+            }, {
+              label: 'Yield with Organic Methods (kg/ha)',
+              data: [2600, 3000, 3200, 3100, 3000, 2800],
+              borderColor: '#27ae60',
+              backgroundColor: 'rgba(39, 174, 96, 0.1)',
+              borderWidth: 3,
+              fill: true,
+              tension: 0.4,
+              pointHoverRadius: 10,
+              pointHoverBackgroundColor: '#27ae60'
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                position: 'top',
+              },
+              tooltip: {
+                mode: 'index',
+                intersect: false,
+                backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                titleColor: '#2c3e50',
+                bodyColor: '#2c3e50',
+                borderColor: '#e9ecef',
+                borderWidth: 1,
+                padding: 12
+              }
+            },
+            interaction: {
+              mode: 'nearest',
+              axis: 'x',
+              intersect: false
+            },
+            scales: {
+              y: {
+                beginAtZero: false,
+                title: {
+                  display: true,
+                  text: 'Crop Yield (kg/ha)'
+                }
+              },
+              x: {
+                title: {
+                  display: true,
+                  text: 'Pesticide Usage (Tonnes)'
+                }
+              }
+            }
+          }
+        });
+      }
+
+      function initCropComparisonChart() {
+        const ctx = document.getElementById('cropComparisonChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'radar',
+          data: {
+            labels: ['Rainfall Adaptation', 'Temperature Tolerance', 'Area Efficiency', 'Pesticide Response', 'Drought Resistance', 'Yield Potential'],
+            datasets: [{
+              label: 'Maize',
+              data: [7, 8, 9, 6, 5, 8],
+              backgroundColor: 'rgba(255, 107, 107, 0.2)',
+              borderColor: '#ff6b6b',
+              borderWidth: 2,
+              pointBackgroundColor: '#ff6b6b',
+              pointHoverRadius: 8
+            }, {
+              label: 'Wheat',
+              data: [6, 7, 7, 5, 8, 6],
+              backgroundColor: 'rgba(78, 205, 196, 0.2)',
+              borderColor: '#4ecdc4',
+              borderWidth: 2,
+              pointBackgroundColor: '#4ecdc4',
+              pointHoverRadius: 8
+            }, {
+              label: 'Rice',
+              data: [9, 6, 5, 7, 4, 7],
+              backgroundColor: 'rgba(69, 183, 209, 0.2)',
+              borderColor: '#45b7d1',
+              borderWidth: 2,
+              pointBackgroundColor: '#45b7d1',
+              pointHoverRadius: 8
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                position: 'top',
+              },
+              tooltip: {
+                backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                titleColor: '#2c3e50',
+                bodyColor: '#2c3e50',
+                borderColor: '#e9ecef',
+                borderWidth: 1,
+                padding: 12,
+                callbacks: {
+                  label: function(context) {
+                    return context.dataset.label + ': ' + context.raw + '/10';
+                  }
+                }
+              }
+            },
+            scales: {
+              r: {
+                min: 0,
+                max: 10,
+                ticks: {
+                  stepSize: 2
+                },
+                pointLabels: {
+                  font: {
+                    weight: '600'
+                  }
+                }
+              }
+            }
+          }
+        });
+      }
+
+      // Tab switching functionality
       document.addEventListener('DOMContentLoaded', function() {
+        // Initialize all charts
+        initRainfallChart();
+        initTemperatureChart();
+        initAreaChart();
+        initPesticidesChart();
+        initCropComparisonChart();
+
+        // Tab switching
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabButtons.forEach(button => {
+          button.addEventListener('click', function() {
+            // Remove active class from all buttons and contents
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
+
+            // Add active class to current button
+            this.classList.add('active');
+
+            // Show corresponding content
+            const tabId = this.getAttribute('data-tab');
+            document.getElementById(tabId + '-tab').classList.add('active');
+          });
+        });
+
+        // Add hover animations to stat cards
+        const statCards = document.querySelectorAll('.stat-card');
+        statCards.forEach(card => {
+          card.addEventListener('mouseenter', function() {
+            this.querySelector('.stat-icon').style.transform = 'scale(1.2) translateY(-5px)';
+            this.querySelector('.stat-icon').style.transition = 'transform 0.3s ease';
+            this.style.boxShadow = '0 10px 25px rgba(0, 0, 0, 0.15)';
+          });
+
+          card.addEventListener('mouseleave', function() {
+            this.querySelector('.stat-icon').style.transform = 'scale(1) translateY(0)';
+            this.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.1)';
+          });
+        });
+
+        // Keep existing form functionality
         const form = document.getElementById('predictionForm');
         const loadingSpinner = document.getElementById('loadingSpinner');
         const predictBtn = document.getElementById('predictBtn');
@@ -456,3 +1111,4 @@
     </script>
   </body>
 </html>
+
