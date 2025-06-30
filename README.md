@@ -35,3 +35,45 @@ This project uses supervised machine learning techniques to forecast crop yield 
 
 ## 📂 Project Structure
 
+AgricultureProductionOptimisation/
+├── app.py # Flask backend for prediction
+├── dtr.pkl # Trained Decision Tree model (saved with pickle)
+├── index.html # Frontend UI for user input/output
+├── Agriculture Production Optimization.ipynb # Model training notebook
+├── README.md # Project documentation
+
+
+---
+
+### 🔹 2. **🚀 How to Run**
+
+This helps anyone clone and run your project locally:
+
+```markdown
+## 🚀 How to Run the Project
+
+1. Clone the repo:
+   ```bash
+   git clone https://github.com/syedhaider12345/AgricultureProductionOptimization.git
+   cd AgricultureProductionOptimization
+
+pip install flask pandas numpy scikit-learn
+
+
+python app.py
+
+
+http://127.0.0.1:5000
+
+
+## 👨‍💻 Author
+
+**Haider Abbas**  
+[GitHub](https://github.com/syedhaider12345)  
+[Email](mailto:Syed.haiderengineer@gmail.com)
+
+## 📜 License
+
+This project is licensed under the MIT License.
+
+
